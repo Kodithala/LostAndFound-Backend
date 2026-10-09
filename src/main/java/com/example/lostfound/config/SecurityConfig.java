@@ -44,8 +44,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints
-                        .requestMatchers(HttpMethod.GET, "/", "/health", "/favicon.ico", "/error").permitAll()
-                        .requestMatchers("/api/auth/**", "/uploads/**").permitAll()
+                        .requestMatchers("/", "/health", "/favicon.ico", "/error", "/api/auth/**", "/uploads/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/categories/**", "/api/items/**", "/api/matches/item/**", "/api/matches/*").permitAll()
                         // Admin & Staff endpoints
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "STAFF")
