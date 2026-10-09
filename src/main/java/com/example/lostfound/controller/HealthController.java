@@ -18,4 +18,9 @@ public class HealthController {
     public ResponseEntity<Map<String, String>> health() {
         return ResponseEntity.ok(Map.of("status", "UP"));
     }
+
+    @GetMapping("/favicon.ico")
+    public ResponseEntity<Void> favicon() {
+        return ResponseEntity.noContent().build();
+    }
 }
