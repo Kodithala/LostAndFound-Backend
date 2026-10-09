@@ -22,9 +22,7 @@ USER spring
 # Copy compiled JAR from build stage
 COPY --from=build /app/target/lostfound-0.0.1-SNAPSHOT.jar app.jar
 
-# Environment variable defaults
-ENV PORT=8080
 EXPOSE 8080
 
-# Execute the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Execute the application passing dynamic PORT variable
+ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT:-8080} -jar app.jar"]
