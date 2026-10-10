@@ -10,6 +10,7 @@ import com.example.lostfound.exception.ResourceNotFoundException;
 import com.example.lostfound.repository.UserRepository;
 import com.example.lostfound.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,6 +35,11 @@ public class UserService {
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new BadRequestException("Email address is already registered!");
+        }
+
+        // Prevent public registration from assigning ADMIN role
+        if (request.getRole() == Role.ADMIN) {
+            throw new BadRequestException("Public registration as ADMIN is not permitted!");
         }
 
         Role userRole = request.getRole() != null ? request.getRole() : Role.USER;
@@ -123,6 +129,17 @@ public class UserService {
         if (phone != null) {
             user.setPhone(phone);
         }
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public User updateUserRole(Long userId, Role newRole) {
+        User user = getUserById(userId);
+        if (newRole == null) {
+            throw new BadRequestException("Role cannot be null");
+        }
+        user.setRole(newRole);
         return userRepository.save(user);
     }
 }

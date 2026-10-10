@@ -5,6 +5,7 @@ import com.example.lostfound.repository.*;
 import com.example.lostfound.service.MatchingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,15 @@ public class DataInitializer implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
     private final MatchingService matchingService;
 
+    @Value("${ADMIN_EMAIL:admin@college.com}")
+    private String adminEmail;
+
+    @Value("${ADMIN_PASSWORD:admin123}")
+    private String adminPassword;
+
+    @Value("${ADMIN_NAME:Campus Administrator}")
+    private String adminName;
+
     @Override
     public void run(String... args) throws Exception {
         if (categoryRepository.count() == 0) {
@@ -37,16 +47,22 @@ public class DataInitializer implements CommandLineRunner {
             categoryRepository.save(Category.builder().name("Other").description("Miscellaneous personal belongings.").build());
         }
 
-        if (userRepository.count() == 0) {
-            log.info("Initializing seed users...");
+        // Initialize admin account securely if missing
+        if (!userRepository.existsByEmail(adminEmail)) {
+            log.info("Creating initial administrator account ({})", adminEmail);
             userRepository.save(User.builder()
-                    .name("Campus Administrator")
-                    .email("admin@college.com")
-                    .password(passwordEncoder.encode("admin123"))
+                    .name(adminName)
+                    .email(adminEmail)
+                    .password(passwordEncoder.encode(adminPassword))
                     .phone("+1-555-0199")
                     .role(Role.ADMIN)
                     .build());
+        } else {
+            log.info("Administrator account ({}) already exists in database.", adminEmail);
+        }
 
+        if (userRepository.count() <= 1) {
+            log.info("Initializing seed users...");
             userRepository.save(User.builder()
                     .name("Campus Staff Officer")
                     .email("staff@college.com")

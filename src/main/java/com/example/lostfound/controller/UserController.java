@@ -1,5 +1,6 @@
 package com.example.lostfound.controller;
 
+import com.example.lostfound.entity.Role;
 import com.example.lostfound.entity.User;
 import com.example.lostfound.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -30,14 +31,25 @@ public class UserController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUserById(id));
+    }
+
+    @PutMapping("/{id}/role")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<User> updateUserRole(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        String roleStr = body.get("role");
+        if (roleStr == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        Role newRole = Role.valueOf(roleStr.toUpperCase());
+        return ResponseEntity.ok(userService.updateUserRole(id, newRole));
     }
 }

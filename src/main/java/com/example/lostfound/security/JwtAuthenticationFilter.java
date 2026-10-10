@@ -54,8 +54,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception e) {
-            // Invalid JWT token
+            // Invalid or expired JWT token
             logger.error("Cannot set user authentication: {}", e);
+            request.setAttribute("exception", e);
         }
 
         filterChain.doFilter(request, response);

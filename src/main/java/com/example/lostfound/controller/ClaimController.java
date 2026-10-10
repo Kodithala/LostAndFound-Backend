@@ -26,7 +26,7 @@ public class ClaimController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Claim>> getAllClaims() {
         return ResponseEntity.ok(claimService.getAllClaims());
     }
@@ -42,7 +42,7 @@ public class ClaimController {
     }
 
     @PutMapping("/{id}/status")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Claim> updateClaimStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
         String statusStr = body.get("status");
         ClaimStatus status = ClaimStatus.valueOf(statusStr.toUpperCase());

@@ -9,6 +9,7 @@ import com.example.lostfound.service.MatchingService;
 import com.example.lostfound.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class MatchController {
     private final UserService userService;
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Match>> getAllMatches() {
         return ResponseEntity.ok(matchRepository.findAll());
     }
@@ -56,6 +58,7 @@ public class MatchController {
     }
 
     @PostMapping("/generate/{itemId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Match>> generateMatchesForItem(@PathVariable Long itemId) {
         return ResponseEntity.ok(matchingService.generateMatchesForItem(itemId));
     }
